@@ -15,10 +15,10 @@ fs.readFile("token.txt", {encoding: 'utf8'}, (err, data) => {
 });
 
 var usage = [
-    "\n0x19D u2age:",
+    "\nGd u2age:",
     "```",
     `${prefix}help: show thii2 help me22age`,
-    `${prefix}join: send a link to make 0x19D join your server`,
+    `${prefix}join: send a link to make Gd join your server`,
     `${prefix}compile [language] [code]: compiile code`,
     `${prefix}languages: 2how language lii2t\n`,
     `${prefix}comp ii2 an aliias to ${prefix}compile`,
@@ -36,7 +36,7 @@ function runBot(token) {
             langs[v.toLowerCase()] = v;
         });
     });
-    var inviteLink = "https://discordapp.com/oauth2/authorize?client_id=215872988455632896&scope=bot&permissions=0";
+    var inviteLink = "https://discordapp.com/oauth2/authorize?client_id=20215939579709095940&scope=bot&permissions=0";
     
     bot.loginWithToken(token, (err, token) => {
         if (err) {
