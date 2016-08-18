@@ -1,0 +1,16 @@
+{
+  "name": "0x19D",
+  "version": "0.720.413",
+  "description": "Discord compile bot",
+  "main": "bot.js",
+  "author": "jdev6",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "8.0.0",
+    "ideone-npm": "2.0.0",
+    "sync-request": "3.0.1"
+  }
+}
