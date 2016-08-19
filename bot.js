@@ -1,24 +1,22 @@
+var config = require("./config.json");
+
 var Discord = require("discord.js");
 var fs = require("fs");
 var ideone = require("ideone-npm");
 var request = require("sync-request");
+var pastebin = require('pastebin')(config.pastebin);
 
 var bot = new Discord.Client();
 
 var prefix = process.argv[2] || ";";
 
-fs.readFile("token.txt", {encoding: 'utf8'}, (err, data) => {
-    if (err)
-        process.exit(console.log("Can't read token.txt: "+err) && 1 || 1);
-
-    runBot(data)
-});
+runBot(config.token);
 
 var usage = [
     "\nGd u2age:",
     "```",
-    `${prefix}help: show thii2 help me22age`,
-    `${prefix}join: send a link to make Gd join your server`,
+    `${prefix}help: 2how thii2 help me22age`,
+    `${prefix}join: 2end a liink to make Gd joiin your 2erver`,
     `${prefix}compile [language] [code]: compiile code`,
     `${prefix}languages: 2how language lii2t\n`,
     `${prefix}comp ii2 an aliias to ${prefix}compile`,
@@ -28,7 +26,7 @@ var usage = [
 ].join('\n');
 
 function runBot(token) {
-    var compile = ideone('b11bf50b8a391d4e8560e97fd9d63460');
+    var compile = ideone(config.ideone);
     var langs = {};
     compile.languageSupport( (languages) => {
         Object.keys(languages).forEach( (v) => {
@@ -36,7 +34,7 @@ function runBot(token) {
             langs[v.toLowerCase()] = v;
         });
     });
-    var inviteLink = "https://discordapp.com/oauth2/authorize?client_id=20215939579709095940&scope=bot&permissions=0";
+    var inviteLink = "https://discordapp.com/oauth2/authorize?client_id=215939579709095940&scope=bot&permissions=0";
     
     bot.loginWithToken(token, (err, token) => {
         if (err) {
@@ -62,7 +60,8 @@ function runBot(token) {
             
             else if (msg.content.startsWith(prefix+"comp ") || msg.content.startsWith(prefix+"compile ")) {
                 //;comp [something]
-                var cmd = content.split(" ");
+                var cmd = content.split(/( |\n)+/);
+                //console.log(cmd);
                 if (!msg.attachments.length && cmd.length < 2)
                     return msg.channel.sendMessage(msg.author.mention()+usage);
                 
@@ -79,9 +78,14 @@ function runBot(token) {
                 }
                 
                 code = code || content.substring(lang.length+1);
+                code = code
+                    .replace(/[ \n]*```[a-zA-Z_0-9]*\n/, "") //remove ```
+                    .replace(/```$/, "")
+                ;
+
                
                 //Source Code to be compiled remotely
-                var compile = ideone('b11bf50b8a391d4e8560e97fd9d63460');
+                var compile = ideone(config.ideone);
 
                 //Input for the program
                 var testCases = '';
@@ -107,7 +111,19 @@ function runBot(token) {
                     
                     console.log(resp);
                     
-                    msg.channel.sendMessage(resp);
+                    if (resp.length > 2000) {
+                        pastebin.new({title: 'Gd: '+lang, content: resp}, function (err, ret) {
+                            if (err)
+                                console.log(err);
+                            else
+                                msg.channel.sendMessage(
+                                    `${msg.author.mention()}\noutput ii2 two biig, here2 a pa2tebiin: ${ret}`
+                                )
+                        });
+                        
+                        
+                    } else
+                        msg.channel.sendMessage(resp);
                 });
 
             }

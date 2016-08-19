@@ -1,3 +1,4 @@
 node_modules/
-npm-debug.log
-token.txt
+npm-debug.*
+config.json
+
