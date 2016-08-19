@@ -4,11 +4,10 @@ var Discord = require("discord.js");
 var fs = require("fs");
 var ideone = require("ideone-npm");
 var request = require("sync-request");
-var pastebin = require('pastebin')(config.pastebin);
 
 var bot = new Discord.Client();
 
-var prefix = process.argv[2] || ";";
+var prefix = config.prefix || ";";
 
 runBot(config.token);
 
@@ -46,9 +45,12 @@ function runBot(token) {
 
     bot.on("ready", () => {
         console.log("Bot ready!");
+        bot.setStatus("online", "try "+prefix+"help");
     });
 
-    bot.on("message", (msg) => {        
+    bot.on("message", (msg) => {
+        var mention = msg.author.mention();
+        
         if (msg.content.startsWith(prefix+"comp") || msg.content.startsWith(prefix+"compile")) {
             var content = msg.content
                 .substring(prefix.length) //remove prefix
@@ -56,14 +58,14 @@ function runBot(token) {
             ;
             
             if (content === "")
-                msg.channel.sendMessage(msg.author.mention()+usage);
+                msg.channel.sendMessage(mention+usage);
             
             else if (msg.content.startsWith(prefix+"comp ") || msg.content.startsWith(prefix+"compile ")) {
                 //;comp [something]
                 var cmd = content.split(/( |\n)+/);
                 //console.log(cmd);
                 if (!msg.attachments.length && cmd.length < 2)
-                    return msg.channel.sendMessage(msg.author.mention()+usage);
+                    return msg.channel.sendMessage(mention+usage);
                 
                 var lang = langs[cmd[0].toLowerCase()];
                 if (!lang)
@@ -98,7 +100,7 @@ function runBot(token) {
                         return msg.reply("there wa2 an error with your reque2t: " + error)
                         
                     
-                    var resp = msg.author.mention();
+                    var resp = mention;
                     
                     if (answer.output)
                         resp += `\nStdout: \`\`\`\n${answer.output}\`\`\``;
@@ -112,15 +114,12 @@ function runBot(token) {
                     console.log(resp);
                     
                     if (resp.length > 2000) {
-                        pastebin.new({title: 'Gd: '+lang, content: resp}, function (err, ret) {
-                            if (err)
-                                console.log(err);
-                            else
-                                msg.channel.sendMessage(
-                                    `${msg.author.mention()}\noutput ii2 two biig, here2 a pa2tebiin: ${ret}`
-                                )
-                        });
-                        
+                        //the output is too long put it in a file
+                        msg.channel.sendMessage("output ii2 two biig, iim goiing two 2end a fiile");
+                        fs.writeFileSync("output.txt", resp.replace(mention, "@"+msg.author.name));
+                        msg.channel.sendFile("./output.txt", msg.author.name + "_output.txt", mention);
+                        //remove file
+                        fs.unlink("./output.txt", function(er){console.log(er);});
                         
                     } else
                         msg.channel.sendMessage(resp);
@@ -129,11 +128,11 @@ function runBot(token) {
             }
         } else if ((msg.content === prefix+"langs") || (msg.content === prefix+"languages")) {
             var resp = "`"+Object.keys(langs).join(", ")+"`";
-            msg.channel.sendMessage("check your pm2 " + msg.author.mention());
+            msg.channel.sendMessage("check your pm2 " + mention);
             msg.author.sendMessage(resp);
             
         } else if (msg.content.startsWith(prefix+"help")) {
-            msg.channel.sendMessage(msg.author.mention()+usage);
+            msg.channel.sendMessage(mention+usage);
             
         } else if (msg.content.startsWith(prefix+"join")) {
             msg.channel.sendMessage(inviteLink);

@@ -11,7 +11,6 @@
   "dependencies": {
     "discord.js": "8.0.0",
     "ideone-npm": "2.0.0",
-    "sync-request": "3.0.1",
-    "pastebin": "0.0.1"
+    "sync-request": "3.0.1"
   }
 }
